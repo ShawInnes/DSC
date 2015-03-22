@@ -4,6 +4,7 @@ Configuration DevelopmentServer
 {
     Import-DscResource -Module xWebAdministration 
     Import-DscResource -Module cWindowsOS
+    Import-DscResource -Module xOneGet
 
     Node $AllNodes.NodeName
     {
@@ -81,6 +82,20 @@ Configuration DevelopmentServer
             DependsOn       = @("[WindowsFeature]Web-Server", "[cHostsFile]TattsHost")
         }
 
+        xOneGet NotepadPlusPlus
+        {
+            Ensure = "Present"
+            PackageName = "NotepadPlusPlus"
+        }
+
+        xOneGet ReSharper
+        {
+            Ensure = "Present"
+            PackageName = "resharper-platform"
+        }
+
+        # C:\Chocolatey\lib\resharper-platform.1.0.1\ReSharperAndToolsPacked01Update1.exe /SpecificProductNames=ReSharper;dotCover;dotPeek;dotMemory;dotTrace /Silent=True /VsVersion=0;12;14
+        <#
 	    cDiskImage VisualStudioMount
 	    {
 		    Ensure          = "Present"
@@ -113,7 +128,7 @@ Configuration DevelopmentServer
                 $vsInstalled
             }
         }
-
+        #>
     }
 }
 
@@ -141,7 +156,5 @@ $configData.NonNodeData.SqlServerISO
 
 DevelopmentServer -ConfigurationData $configData 
 
-Start-DscConfiguration .\DevelopmentServer -Debug –Wait
-
-
+Start-DscConfiguration .\DevelopmentServer -Verbose –Wait
 

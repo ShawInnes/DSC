@@ -5,6 +5,7 @@ Find-Module | Where Name -like '*Web*'
 Install-Module -Name xSqlPs
 Install-Module -Name xDSCResourceDesigner
 Install-Module -Name xWebAdministration
+Install-Module -Name xOneGet
 
 Install-Module -Name cWindowsOS
 
@@ -12,5 +13,6 @@ Install-Module -Name cWindowsOS
 
 # Get-Command -Module OneGet
 
-Get-DSCResource
+Get-DSCResource -Name xOneGet
+
 
