@@ -99,7 +99,13 @@ Configuration DevelopmentServer
             GetScript =
             {
                 $testInstalled = (Get-ChildItem -Recurse -Force "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\" -ErrorAction SilentlyContinue `
-                    | Where-Object { ( $_.Name -eq "WebEssentials2015.dll") }).Exists
+                    | Where-Object { ( $_.Name -eq "WebEssentials2015.dll") })
+                
+                if ($testInstalled -eq $null)
+                {
+                    $testInstalled = $false
+                }
+
                 $testInstalled
             }
             SetScript =
@@ -125,7 +131,13 @@ Configuration DevelopmentServer
                     Write-Verbose "WebEssentials is not installed"
                 }
 
+                if ($testInstalled -eq $null)
+                {
+                    $testInstalled = $false
+                }
+
                 $testInstalled
+
             }
         }
         # C:\Chocolatey\lib\resharper-platform.1.0.1\ReSharperAndToolsPacked01Update1.exe /SpecificProductNames=ReSharper;dotCover;dotPeek;dotMemory;dotTrace /Silent=True /VsVersion=0;12;14
