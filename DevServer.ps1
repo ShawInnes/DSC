@@ -81,39 +81,39 @@ Configuration DevelopmentServer
             DependsOn       = @("[WindowsFeature]Web-Server", "[cHostsFile]TattsHost")
         }
 
-	    cDiskImage VS2015Mount
+	    cDiskImage VisualStudioMount
 	    {
 		    Ensure          = "Present"
-		    ImagePath       = "C:\Temp\" + $ConfigurationData.NonNodeData.VisualStudioISO
+		    ImagePath       = "C:\Jobs\" + $ConfigurationData.NonNodeData.VisualStudioISO
 		    DriveLetter     = "X"
 	    }
 
-        Script InstallVisualStudio2015
+        Script InstallVisualStudio
         {
-            DependsOn       = @("[cDiskImage]VS2015Mount")
+            DependsOn       = @("[cDiskImage]VisualStudioMount")
             GetScript =
             {
-                $isInstalled = Test-Path –Path "$env:ProgramFiles\Microsoft Visual Studio 13.0\"
+                $isInstalled = Test-Path –Path "$env:ProgramFiles\Microsoft Visual Studio 12.0\"
                 $isInstalled
             }
             SetScript =
             {
-                $cmd = "X:\vs_ultimate.exe /Passive /NoRestart /AdminFile X:\AdminDeployment.xml "
+                $cmd = "X:\vs_ultimate.exe /NoRestart /AdminFile C:\Jobs\AdminDeployment.xml"
                 Invoke-Expression cmd | Write-Verbose
             }
             TestScript =
             {
-                $vsInstalled = Test-Path –Path "$env:ProgramFiles\Microsoft Visual Studio 13.0\"
+                $vsInstalled = Test-Path –Path "$env:ProgramFiles\Microsoft Visual Studio 12.0\"
                 
                 if ($vsInstalled) {
-                    Write-Verbose "Visual Studio 2015 already installed"
+                    Write-Verbose "Visual Studio already installed"
                 } else {
-                    Write-Verbose "Visual Studio 2015 is not installed"
+                    Write-Verbose "Visual Studio is not installed"
                 }
                 $vsInstalled
             }
         }
-        #>
+
     }
 }
 
@@ -127,12 +127,11 @@ $configData = @{
        }, 
        @{ 
             NodeName           = "localhost" 
-            Roles              = @("Web", "Ubet-Web", "Tatts-Web", "VS2015")
+            Roles              = @("Web", "Ubet-Web", "Tatts-Web", "VisualStudio")
         }
     );
 
     NonNodeData = @{
-        ISOPath            = "Z:\ISO\"
         SqlServerISO       = "en_sql_server_2014_developer_edition_x64_dvd_3940406.iso"
         VisualStudioISO    = "en_visual_studio_2015_ultimate_ctp_6_version_14.0.22609.0.d14rel_x86_dvd_6383012.iso"
     }
@@ -143,3 +142,6 @@ $configData.NonNodeData.SqlServerISO
 DevelopmentServer -ConfigurationData $configData 
 
 Start-DscConfiguration .\DevelopmentServer -Debug –Wait
+
+
+
