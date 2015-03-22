@@ -17,7 +17,7 @@ Configuration DevelopmentServer
                 Ensure = "Present"
                 Name = $Feature
             } 
-        } 
+        }
 
         # Install ASP.NET 4.5
         WindowsFeature ASP
@@ -94,6 +94,40 @@ Configuration DevelopmentServer
             PackageName = "resharper-platform"
         }
 
+        Script WebEssentials
+        {
+            GetScript =
+            {
+                $testInstalled = (Get-ChildItem -Recurse -Force "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\" -ErrorAction SilentlyContinue `
+                    | Where-Object { ( $_.Name -eq "WebEssentials2015.dll") }).Exists
+                $testInstalled
+            }
+            SetScript =
+            {
+                $source = "https://visualstudiogallery.msdn.microsoft.com/ee6e6d8c-c837-41fb-886a-6b50ae2d06a2/file/146119/14/Web%20Essentials%202015.0%20CTP%206%20v0.3.52.vsix"
+                $destination = Join-Path -Path $env:TEMP -ChildPath "WebEssentials.vsix"
+
+                $wc = New-Object system.net.webclient
+                $wc.downloadFile($source, $destination)
+
+                $cmd = "& ""${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\VsixInstaller"" /q /a ""$env:TEMP\WebEssentials.vsix"""
+             
+                Invoke-Expression -Command   $cmd | Write-Verbose
+            }
+            TestScript =
+            {
+                $testInstalled = (Get-ChildItem -Recurse -Force "${env:ProgramFiles(x86)}\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\" -ErrorAction SilentlyContinue `
+                    | Where-Object { ( $_.Name -eq "WebEssentials2015.dll") }).Exists
+                
+                if ($testInstalled) {
+                    Write-Verbose "WebEssentials already installed"
+                } else {
+                    Write-Verbose "WebEssentials is not installed"
+                }
+
+                $testInstalled
+            }
+        }
         # C:\Chocolatey\lib\resharper-platform.1.0.1\ReSharperAndToolsPacked01Update1.exe /SpecificProductNames=ReSharper;dotCover;dotPeek;dotMemory;dotTrace /Silent=True /VsVersion=0;12;14
         <#
 	    cDiskImage VisualStudioMount
